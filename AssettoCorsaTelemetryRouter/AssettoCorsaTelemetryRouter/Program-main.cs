@@ -17,6 +17,9 @@ namespace Asseto_Corsa_Telemetry_Router
 
         static void Main(string[] args)
         {
+            Console.WriteLine("--- Assetto Corsa Telemtry Router ---\n");
+            Console.WriteLine("Compatible with AC and ACC.\nExit with Ctrl+C.\n\n");
+
             string[] ports = SerialPort.GetPortNames();
             Console.WriteLine("The following serial ports were found:");
             int ii = 0;
@@ -30,9 +33,9 @@ namespace Asseto_Corsa_Telemetry_Router
 
             int port_number = -1;
 
+            Console.Write("Choose port by leading number: ");
             while (port_number < 0)
             {
-                Console.WriteLine("Choose port by leading number");
                 ConsoleKeyInfo input = Console.ReadKey();
                 Console.WriteLine();
                 if (char.IsDigit(input.KeyChar))
@@ -41,20 +44,20 @@ namespace Asseto_Corsa_Telemetry_Router
                 }
                 if (port_number < 0 || port_number > ports.Length - 1)
                 {
-                    Console.WriteLine("Invalid");
+                    Console.Write("Invalid, enter again: ");
                     port_number = -1;
                 }
             }
 
             _port = new SerialPort(ports[port_number], 115200);
 
-            Console.WriteLine("Waiting for Arduino to connect...");
+            Console.WriteLine("\n\nWaiting for Arduino to connect...");
             _port.Open();
             while (!_port.IsOpen)
             {
                 Thread.Sleep(10);
             }
-            Console.WriteLine("Connected to Arduino");
+            Console.WriteLine("Connected to Arduino.");
 
             AssettoCorsa ac = new AssettoCorsa();
             ac.StaticInfoInterval = 5000;
@@ -63,13 +66,17 @@ namespace Asseto_Corsa_Telemetry_Router
             ac.PhysicsUpdated += ac_PhysicUpdated;
             ac.Start();
 
-            Console.WriteLine("Waiting for game to connect...");
+            Console.WriteLine("\nWaiting for game to connect...");
             while (!ac.IsRunning)
             {
                 Thread.Sleep(500);
             }
-            Console.WriteLine("Connected to game!");
+            Console.WriteLine("Connected to game.\n");
 
+
+            Console.Write("Ready to go. Sending data every ");
+            Console.Write(ac.PhysicsInterval);
+            Console.WriteLine("ms.");
             Console.ReadKey();
         }
 
